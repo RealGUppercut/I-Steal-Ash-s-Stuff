@@ -5,6 +5,10 @@ import Link from "next/link";
 import Image from "next/image";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import DeleteButton from "@/components/DeleteButton";
+import ChessBoard from "@/components/ChessBoard";
+import UpdateForm from "@/components/UpdateForm";
+import LikeButton from "@/components/LikeButton";
 
 export default async function GamePage({ params }) {
   const game = await db.query(
@@ -19,6 +23,17 @@ export default async function GamePage({ params }) {
   const commentsData = comments.rows;
   console.log(commentsData);
 
+  // get likes
+  const likes = await db.query(
+    `SELECT * FROM game_likes WHERE chess_games_id=${params.id}`
+  );
+  const likesData = likes.rows;
+  console.log(likesData);
+  const sumOfLikes = likesData.reduce((accumulator, item) => {
+    return accumulator + item.game_like;
+  }, 0);
+
+  console.log(sumOfLikes);
   // =============================================================================================================
   async function handleSubmit(formValues) {
     "use server";
@@ -39,29 +54,68 @@ export default async function GamePage({ params }) {
     redirect(`/chess-games/${params.id}`);
   }
 
+  // ===================================================================================================================
+  // delete comments
+  async function handleDelete(index) {
+    "use server";
+    await db.query(`DELETE FROM comments2 WHERE id=${index}`);
+
+    revalidatePath(`/chess-games/${params.id}`);
+    redirect(`/chess-games/${params.id}`);
+  }
+
+  // ==================================================================================================================
+  // conditionally render update component
+  let showUpdate = true;
+
+  // =================================================================================================================
+  // Like button
+  async function handleLike(index) {
+    "use server";
+    await db.query(
+      `INSERT INTO game_likes(game_like, chess_games_id) VALUES(true,  ${index})`
+    );
+
+    revalidatePath(`/chess-games/${params.id}`);
+    redirect(`/chess-games/${params.id}`);
+  }
+
   return (
     <>
-      <h1>dynamic route for each post</h1>
-      <Link href="/chess-games">go back ...</Link>
+      <div className="flex flex-col gap-3 m-4">
+        <h1>dynamic route for each post</h1>
+        <Link href="/chess-games">go back ...</Link>
+        <div>
+          <LikeButton id={params.id} handleLike={handleLike} />
+          <h2 className="font-bold">{sumOfLikes} Likes</h2>
+        </div>
+        <Link href={`/chess-games/${params.id}/update`}>update game entry</Link>
+      </div>
 
       <section className="flex flex-col items-center">
-        <div className="flex flex-col items-center gap-4 p-6 w-96">
+        <div className="flex flex-col items-center gap-4 p-6 w-[70vw] min-w-[350px]">
           <Image
             alt={data.white}
             src={data.image_src}
-            width={200}
+            width={500}
             height={200}
           />
           <h1>
             {data.white} vs {data.black}
           </h1>
+          <h2>{data.opening}</h2>
           <p>game summary&#58; {data.summary}</p>
           <p>{data.pgn}</p>
           <p>Winner&#58; {data.winner}</p>
         </div>
       </section>
+      <div className="container mx-auto">
+        <h1 className="text-3xl font-bold mb-6">Chess Game</h1>
+        <ChessBoard pgn={data.pgn} />
+      </div>
 
-      <form action={handleSubmit} className="flex flex-col items-center">
+      <form action={handleSubmit} className="flex flex-col items-center m-4">
+        <p className="font-semibold m-4">Please leave a comment</p>
         <label htmlFor="username">Name </label>
         <input
           type="text"
@@ -97,12 +151,16 @@ export default async function GamePage({ params }) {
           >
             <p>name&#58; {comment.username}</p>
             <p>comment&#58; {comment.comment}</p>
-            <button
-              className="border-black border-1 bg-slate-300 text-rose-400 p-1 m-2 hover:bg-orange-800 hover:text-blue-200
+            <DeleteButton id={comment.id} handleDelete={handleDelete} />
+
+            {/* <form>
+              <button
+                className="border-black border-1 bg-slate-300 text-rose-400 p-1 m-2 hover:bg-orange-800 hover:text-blue-200
           transition duration-300 ease-in-out"
-            >
-              delete
-            </button>
+              >
+                delete
+              </button>
+            </form> */}
           </div>
         ))}
       </section>

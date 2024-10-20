@@ -2,6 +2,7 @@
 import { Roboto_Mono } from "next/font/google";
 import Header from "@/components/Header";
 import "./globals.css";
+import Head from "next/head";
 
 const roboto = Roboto_Mono({
   weight: "500",
