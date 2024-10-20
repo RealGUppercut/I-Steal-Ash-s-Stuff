@@ -9,8 +9,8 @@ export default function DeleteButton({ handleDelete, id }) {
         }}
       >
         <button
-          className="border-black border-1 bg-slate-300 text-rose-400 p-1 m-2 hover:bg-orange-800 hover:text-blue-200
-          transition duration-300 ease-in-out"
+          className="hover:scale-110 ease-in-out transition-transform duration-300 font-bold bg-green-100 w-fit p-0.5 border-green-800 border-2
+            rounded-lg "
         >
           delete
         </button>

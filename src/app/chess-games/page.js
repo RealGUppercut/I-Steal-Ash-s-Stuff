@@ -3,6 +3,14 @@
 // ! remember the metadata
 import { db } from "@/utils/dbConnection";
 import Link from "next/link";
+import homeBackground from "@/../public/homeBackground.avif";
+import styles from "@/app/chess-games/chessgame.module.css";
+import Image from "next/image";
+
+export const metadata = {
+  title: "The Chess Directory - Chess games",
+  description: "A list of notable chess games",
+};
 
 export default async function ChessGamesPage({ searchParams }) {
   const games = await db.query(`SELECT * FROM chess_games`);
@@ -50,41 +58,72 @@ export default async function ChessGamesPage({ searchParams }) {
 
   return (
     <>
-      <h1>Chess Games </h1>
-      <div className="flex flex-row gap-6">
-        <Link href="/chess-games?sort=asc">Sort ascending</Link>
-        <Link href="/chess-games?sort=desc">Sort descending</Link>
-        <Link href="/chess-games?category=Queens Gambit">
-          Filter Queens gambit games
-        </Link>
+      <div className={styles.container}>
+        <Image
+          alt="background image"
+          src={homeBackground}
+          layout="fill"
+          objectFit="cover"
+          quality={100}
+          className={styles.backgroundImage}
+        />
 
-        <select>
+        <div className="bg-green-200 p-2">
+          <h1 className="font-bold">Game Directory </h1>
+          <div className="flex flex-row gap-6 font-bold">
+            <Link
+              className="hover:scale-110 ease-in-out transition-transform duration-300"
+              href="/chess-games?sort=asc"
+            >
+              Sort ascending
+            </Link>
+            <Link
+              className="hover:scale-110 ease-in-out transition-transform duration-300"
+              href="/chess-games?sort=desc"
+            >
+              Sort descending
+            </Link>
+
+            {/* <select>
           <option value="">Select a category</option>
           {uniqueOpenings.map((opening, index) => (
             <option key={index} value={opening}>
               {opening}
             </option>
           ))}
-        </select>
-      </div>
-      <div className="flex flex-row gap-6 items-center">
-        <h2>Filter by Opening&#58; </h2>
-        {uniqueOpenings.map((opening, index) => (
-          <Link key={index} href={`/chess-games?category=${opening}`}>
-            {opening}
-          </Link>
-        ))}
-      </div>
-
-      <div className="flex flex-col gap-4 m-4">
-        {data.map((game) => (
-          <div key={game.id}>
-            <h2>{game.opening}</h2>
-            <Link href={`/chess-games/${game.id}`}>
-              {game.white} vs {game.black}
-            </Link>
+        </select> */}
           </div>
-        ))}
+          <div className="flex flex-row gap-6 items-center flex-wrap">
+            <h2 className="font-bold">Filter by Opening&#58; </h2>
+            {uniqueOpenings.map((opening, index) => (
+              <Link
+                className="font-bold hover:scale-110 ease-in-out transition-transform duration-300"
+                key={index}
+                href={`/chess-games?category=${opening}`}
+              >
+                {opening}
+              </Link>
+            ))}
+          </div>
+        </div>
+
+        <div className="flex flex-row gap-4 m-4 flex-wrap justify-center ">
+          {data.map((game) => (
+            <div
+              className="max-w-xs min-w-72 border-4 border-green-700 p-4 rounded-lg bg-green-50"
+              key={game.id}
+            >
+              <h2>{game.opening}</h2>
+              <Link
+                className="font-bold hover:scale-110 ease-in-out transition-transform duration-300 z-10 inline-block p-1"
+                href={`/chess-games/${game.id}`}
+              >
+                {game.white} vs {game.black}
+              </Link>
+              <p className="my-2">{game.summary}</p>
+            </div>
+          ))}
+        </div>
       </div>
     </>
   );

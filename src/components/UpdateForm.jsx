@@ -46,7 +46,10 @@ export default function UpdateForm({
 
   return (
     <>
-      <form action={handleUpdate} className="flex flex-col items-center">
+      <form
+        action={handleUpdate}
+        className="flex flex-col items-center bg-green-50 w-80 my-8 border-4 border-green-700 p-4 rounded-lg"
+      >
         <label htmlFor="white">Player White </label>
         <input
           type="text"
@@ -117,8 +120,8 @@ export default function UpdateForm({
         />
         <button
           type="submit"
-          className="border-rose-400 border-4 bg-yellow-400 text-rose-400 p-2 m-4 hover:bg-orange-800 hover:text-blue-200
-          transition duration-300 ease-in-out"
+          className="border-green-800 border-4 bg-green-100 text-zinc-900 p-2 m-4 hover:bg-green-800 hover:text-green-50
+          transition duration-300 ease-in-out rounded-lg"
         >
           Update Game
         </button>
