@@ -1,3 +1,5 @@
+Joe is up to no good
+
 ### What does the site do?
 
 This is a full stack app that displays information on chess games from a database. The user also has the ability to add, update, add comments, delete comments. It was designed on Next js
